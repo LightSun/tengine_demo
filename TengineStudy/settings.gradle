@@ -1,0 +1,2 @@
+rootProject.name='TengineStudy'
+include ':app'

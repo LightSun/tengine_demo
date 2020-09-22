@@ -1,0 +1,56 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 30
+    buildToolsVersion "30.0.2"
+
+    defaultConfig {
+        applicationId "com.heaven7.android.tenginestudy"
+        minSdkVersion 21
+        targetSdkVersion 30
+        versionCode 1
+        versionName "1.0"
+
+
+        externalNativeBuild {
+            //-DSK_API
+            cmake {
+                cppFlags "-std=c++14 -O0"
+            }
+        }
+        ndk {
+            // stl "gnustl_shared"
+            abiFilters "arm64-v8a" /*,"x86"*/
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    externalNativeBuild {
+        cmake {
+            path "CMakeLists.txt"
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.1'
+
+    implementation 'com.github.LightSun:SuperAdapter:2.1.8-x'
+    implementation('com.github.LightSun:util-v1:1.1.7-x') {
+        exclude module: 'android-component'
+    }
+
+    implementation 'com.heaven7.java.base:Java-base:1.2.0'
+}
