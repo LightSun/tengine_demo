@@ -26,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
         System.loadLibrary("tengine-lite");
         System.loadLibrary("tengine_demo");
     }
+    public static native int runMain(int argc,String[] args);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 AssetsUtils.copyAll(getApplicationContext(), "landmark", DST_PATH);
+                AssetsUtils.copyAll(getApplicationContext(), "openpose", DST_PATH);
                 System.out.println("copyAssets done");
                 Toaster.show(getApplicationContext(), "copyAssets done");
             }
@@ -68,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 // -m models/landmark.tmfile -i images/mobileface02.jpg -r 1 -t 1
                 List<String> list = new ArrayList<>();
-                list.add(DST_PATH + "/landmark/out.jpg");
+                list.add(DST_PATH + "/landmark");
                 //list.add("test"); //getopt 不能以"-" 开头
                // list.add("-m");
                 list.add(DST_PATH + "/landmark/landmark.tmfile");
@@ -84,5 +86,20 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public static native int runMain(int argc,String[] args);
+    public void onClickTestOpenpose(View view) {
+        Schedulers.io().newWorker().schedule(new Runnable() {
+            @Override
+            public void run() {
+                // -m models/landmark.tmfile -i images/mobileface02.jpg -r 1 -t 1
+                List<String> list = new ArrayList<>();
+                list.add(DST_PATH + "/openpose");
+                list.add(DST_PATH + "/openpose/pose_iter_440000.tmfile");
+                list.add(DST_PATH + "/openpose/1.jpg");
+                list.add("1");
+                list.add("1");
+                int result = runMain(4, list.toArray(new String[list.size()]));
+                System.out.println("onClickTestOpenpose: result = " + result);
+            }
+        });
+    }
 }

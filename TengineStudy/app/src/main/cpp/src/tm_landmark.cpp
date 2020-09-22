@@ -26,6 +26,8 @@
 #include <iostream>
 #include <functional>
 #include <algorithm>
+#include <malloc.h>"
+#include "../include/ext.h"
 
 extern "C" {
 
@@ -184,7 +186,9 @@ int test_main(TengineArgs* args) {
         draw_circle(img_out, x, y, 2, 0, 255, 0);
     }
 
-    save_image(img_out, args->outFile);
+    const char *out = concatStr(args->outDir, "/landmark_out.jpg");
+    save_image(img_out, out);
+    free((void*)out);
 
     postrun_graph(graph);
     destroy_graph(graph);

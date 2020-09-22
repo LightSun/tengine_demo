@@ -17,8 +17,8 @@ add_library(
         SHARED
         src/main/cpp/include/impl.c
         ${tengine_example}
-        # src/main/cpp/src/tm_openpose.cpp
-        src/main/cpp/src/tm_landmark.cpp
+        src/main/cpp/src/tm_openpose.cpp
+        #src/main/cpp/src/tm_landmark.cpp
         src/main/cpp/src/jni_main.cpp
 )
 find_library( # Sets the name of the path variable.

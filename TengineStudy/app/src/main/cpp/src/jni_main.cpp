@@ -22,7 +22,7 @@ jobjectArray arr
     TengineArgs targs;
     char* args[len];
 
-    targs.outFile = const_cast<char *>(env->GetStringUTFChars(static_cast<jstring>(env->GetObjectArrayElement(arr, 0)), nullptr));
+    targs.outDir = const_cast<char *>(env->GetStringUTFChars(static_cast<jstring>(env->GetObjectArrayElement(arr, 0)), nullptr));
     targs.model_file = const_cast<char *>(env->GetStringUTFChars(static_cast<jstring>(env->GetObjectArrayElement(arr, 1)), nullptr));
     targs.image_file = const_cast<char *>(env->GetStringUTFChars(static_cast<jstring>(env->GetObjectArrayElement(arr, 2)), nullptr));
    /* for (int i = 0; i < len; ++i) {
@@ -38,7 +38,7 @@ jobjectArray arr
         env->DeleteLocalRef(jstr);
     }*/
     jstring jstr0 = static_cast<jstring>(env->GetObjectArrayElement(arr, 0));
-    env->ReleaseStringUTFChars(jstr0, targs.outFile);
+    env->ReleaseStringUTFChars(jstr0, targs.outDir);
     env->DeleteLocalRef(jstr0);
 
     jstring jstr1 = static_cast<jstring>(env->GetObjectArrayElement(arr, 1));

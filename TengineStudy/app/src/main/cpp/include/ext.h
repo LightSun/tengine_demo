@@ -24,4 +24,6 @@ typedef struct TengineArgs{
     int num_thread;
 }TengineArgs;
 
+const char* concatStr(const char *s1, const char *s2);
+
 #endif //TENGINESTUDY_EXT_H
