@@ -503,20 +503,20 @@ void save_image(image im, const char* name)
     switch (f)
     {
         case 0:
-            sprintf(buff, "%s.jpg", name);
-            success = stbi_write_jpg(buff, im.w, im.h, im.c, data, 80);
+            //sprintf(buff, "%s.jpg", name);
+            success = stbi_write_jpg(name, im.w, im.h, im.c, data, 80);
             break;
         case 1:
-            sprintf(buff, "%s.png", name);
-            success = stbi_write_png(buff, im.w, im.h, im.c, data, im.w * im.c);
+            //sprintf(buff, "%s.png", name);
+            success = stbi_write_png(name, im.w, im.h, im.c, data, im.w * im.c);
             break;
         case 2:
-            sprintf(buff, "%s.tga", name);
-            success = stbi_write_tga(buff, im.w, im.h, im.c, data);
+            //sprintf(buff, "%s.tga", name);
+            success = stbi_write_tga(name, im.w, im.h, im.c, data);
             break;
         case 3:
-            sprintf(buff, "%s.bmp", name);
-            success = stbi_write_bmp(buff, im.w, im.h, im.c, data);
+            //sprintf(buff, "%s.bmp", name);
+            success = stbi_write_bmp(name, im.w, im.h, im.c, data);
             break;
         default:
             return;

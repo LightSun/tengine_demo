@@ -15,4 +15,13 @@ typedef struct options{
     int precision;
 }options;
 
+typedef struct TengineArgs{
+    char* outDir;
+    char* outFile;
+    char* model_file;
+    char* image_file;
+    int repeat_count;
+    int num_thread;
+}TengineArgs;
+
 #endif //TENGINESTUDY_EXT_H

@@ -1,21 +1,23 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 30
-    buildToolsVersion "30.0.2"
+    compileSdkVersion 29
+    buildToolsVersion "30.0.1"
 
     defaultConfig {
         applicationId "com.heaven7.android.tenginestudy"
         minSdkVersion 21
-        targetSdkVersion 30
+        targetSdkVersion 29
         versionCode 1
         versionName "1.0"
-
+        multiDexEnabled true
 
         externalNativeBuild {
             //-DSK_API
             cmake {
                 cppFlags "-std=c++14 -O0"
+                cFlags "-O0"
+                abiFilters "arm64-v8a"
             }
         }
         ndk {
@@ -27,17 +29,28 @@ android {
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            jniDebuggable true
+            debuggable true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         debug {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            jniDebuggable true
+            debuggable true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
     externalNativeBuild {
         cmake {
             path "CMakeLists.txt"
         }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    aaptOptions {
+        noCompress "tmfile"
     }
 }
 
@@ -53,4 +66,6 @@ dependencies {
     }
 
     implementation 'com.heaven7.java.base:Java-base:1.2.0'
+    implementation 'com.github.LightSun:Produce-consume:1.0.2-beta4'
+    implementation 'com.heaven7.java.visitor:Visitor:1.3.7'
 }

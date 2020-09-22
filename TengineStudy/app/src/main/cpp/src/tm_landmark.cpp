@@ -27,6 +27,8 @@
 #include <functional>
 #include <algorithm>
 
+extern "C" {
+
 #include "common.h"
 #include "tengine_c_api.h"
 #include "tengine_operations.h"
@@ -34,11 +36,12 @@
 #define DEFAULT_REPEAT_COUNT 1
 #define DEFAULT_THREAD_COUNT 1
 
-void get_input_fp32_data(const char* image_file, float* input_data, int img_h, int img_w, float* mean, float* scale)
-{
+void
+get_input_fp32_data(const char *image_file, float *input_data, int img_h, int img_w, float *mean,
+                    float *scale) {
     image img = imread_process(image_file, img_w, img_h, mean, scale);
 
-    float* image_data = ( float* )img.data;
+    float *image_data = (float *) img.data;
 
     for (int i = 0; i < img_w * img_h * 3; i++)
         input_data[i] = image_data[i];
@@ -46,27 +49,24 @@ void get_input_fp32_data(const char* image_file, float* input_data, int img_h, i
     free_image(img);
 }
 
-void show_usage()
-{
-    fprintf(stderr, "[Usage]:  [-h]\n    [-m model_file] [-i image_file] [-r repeat_count] [-t thread_count]\n");
+void show_usage() {
+    fprintf(stderr,
+            "[Usage]:  [-h]\n    [-m model_file] [-i image_file] [-r repeat_count] [-t thread_count]\n");
 }
 
-int main(int argc, char* argv[])
-{
+int test_main(TengineArgs* args) {
     int repeat_count = DEFAULT_REPEAT_COUNT;
     int num_thread = DEFAULT_THREAD_COUNT;
-    char* model_file = nullptr;
-    char* image_file = nullptr;
+    char *model_file = args->model_file;
+    char *image_file = args->image_file;
     int img_h = 144;
     int img_w = 144;
     float mean[3] = {128.f, 128.f, 128.f};
     float scale[3] = {0.0039, 0.0039, 0.0039};
 
-    int res;
-    while ((res = getopt(argc, argv, "m:i:r:t:h:")) != -1)
-    {
-        switch (res)
-        {
+   /* int res;
+    while ((res = getopt(argc, argv, "m:i:r:t:h::")) != -1) {
+        switch (res) {
             case 'm':
                 model_file = optarg;
                 break;
@@ -86,17 +86,15 @@ int main(int argc, char* argv[])
                 break;
         }
     }
-
+*/
     /* check files */
-    if (model_file == nullptr)
-    {
+    if (model_file == nullptr) {
         fprintf(stderr, "Error: Tengine model file not specified!\n");
         show_usage();
         return -1;
     }
 
-    if (image_file == nullptr)
-    {
+    if (image_file == nullptr) {
         fprintf(stderr, "Error: Image file not specified!\n");
         show_usage();
         return -1;
@@ -107,7 +105,7 @@ int main(int argc, char* argv[])
 
     /* set runtime options */
     struct options opt;
-    opt.num_thread = 1;
+    opt.num_thread = num_thread;
     opt.cluster = TENGINE_CLUSTER_LITTLE;
     opt.precision = TENGINE_MODE_FP32;
 
@@ -117,8 +115,7 @@ int main(int argc, char* argv[])
 
     /* create graph, load tengine model xxx.tmfile */
     graph_t graph = create_graph(nullptr, "tengine", model_file);
-    if (graph == nullptr)
-    {
+    if (graph == nullptr) {
         std::cout << "Create graph0 failed\n";
         std::cout << "errno: " << get_tengine_errno() << "\n";
         return -1;
@@ -127,29 +124,25 @@ int main(int argc, char* argv[])
     /* set the input shape to initial the graph, and prerun graph to infer shape */
     int img_size = img_h * img_w * 3;
     int dims[] = {1, 3, img_h, img_w};    // nchw
-    float* input_data = (float* )malloc(img_size * sizeof(float));
+    float *input_data = (float *) malloc(img_size * sizeof(float));
 
     tensor_t input_tensor = get_graph_input_tensor(graph, 0, 0);
-    if (input_tensor == nullptr)
-    {
+    if (input_tensor == nullptr) {
         fprintf(stderr, "Get input tensor failed\n");
         return -1;
     }
 
-    if (set_tensor_shape(input_tensor, dims, 4) < 0)
-    {
+    if (set_tensor_shape(input_tensor, dims, 4) < 0) {
         fprintf(stderr, "Set input tensor shape failed\n");
         return -1;
     }
 
-    if (set_tensor_buffer(input_tensor, input_data, img_size * 4) < 0)
-    {
+    if (set_tensor_buffer(input_tensor, input_data, img_size * 4) < 0) {
         fprintf(stderr, "Set input tensor buffer failed\n");
         return -1;
     }
 
-    if (prerun_graph_multithread2(graph, opt) < 0)
-    {
+    if (prerun_graph_multithread2(graph, opt) < 0) {
         fprintf(stderr, "Prerun multithread graph failed.\n");
         return -1;
     }
@@ -161,11 +154,9 @@ int main(int argc, char* argv[])
     double min_time = __DBL_MAX__;
     double max_time = -__DBL_MAX__;
     double total_time = 0.;
-    for (int i = 0; i < repeat_count; i++)
-    {
+    for (int i = 0; i < repeat_count; i++) {
         double start = get_current_time();
-        if (run_graph(graph, 1) < 0)
-        {
+        if (run_graph(graph, 1) < 0) {
             fprintf(stderr, "Run graph failed\n");
             return -1;
         }
@@ -183,22 +174,22 @@ int main(int argc, char* argv[])
     /* get output tensor */
     tensor_t output_tensor = get_graph_output_tensor(graph, 0, 0);
 
-    float* data = ( float* )(get_tensor_buffer(output_tensor));
-    int data_size = get_tensor_buffer_size(output_tensor) / sizeof(float );
+    float *data = (float *) (get_tensor_buffer(output_tensor));
+    int data_size = get_tensor_buffer_size(output_tensor) / sizeof(float);
 
     image img_out = imread(image_file);
-    for (int i = 0; i < data_size / 2; i++)
-    {
-        int x = (int)(data[2 * i    ] * (float)img_out.w / 144.f);
-        int y = (int)(data[2 * i + 1] * (float)img_out.h / 144.f);
+    for (int i = 0; i < data_size / 2; i++) {
+        int x = (int) (data[2 * i] * (float) img_out.w / 144.f);
+        int y = (int) (data[2 * i + 1] * (float) img_out.h / 144.f);
         draw_circle(img_out, x, y, 2, 0, 255, 0);
     }
 
-    save_image(img_out, "landmarkout");
+    save_image(img_out, args->outFile);
 
     postrun_graph(graph);
     destroy_graph(graph);
     release_tengine();
 
     return 0;
+}
 }
