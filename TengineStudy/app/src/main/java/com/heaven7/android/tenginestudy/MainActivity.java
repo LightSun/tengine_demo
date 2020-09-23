@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
                 // -m models/landmark.tmfile -i images/mobileface02.jpg -r 1 -t 1
                 List<String> list = new ArrayList<>();
                 list.add(DST_PATH + "/openpose");
-                list.add(DST_PATH + "/openpose/pose_iter_440000.tmfile");
+                list.add(DST_PATH + "/openpose/tm_openpose_coco.tmfile");
                 list.add(DST_PATH + "/openpose/1.jpg");
                 list.add("1");
                 list.add("1");
