@@ -26,6 +26,7 @@
 #define __VECTOR_H__
 
 #include <string.h>
+#include <malloc.h>
 
 #include "sys_port.h"
 

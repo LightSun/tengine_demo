@@ -35,7 +35,15 @@
 #include <sys/time.h>
 #endif    // _WIN32
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 double get_current_time();
 void split(float* array, char* str, const char* del);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif    // __COMMON_H__

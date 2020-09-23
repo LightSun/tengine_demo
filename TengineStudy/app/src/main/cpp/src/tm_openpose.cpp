@@ -8,10 +8,10 @@
 #include "opencv2/opencv.hpp"
 #include "opencv2/core/core.hpp"
 #include "opencv2/highgui/highgui.hpp"
-extern "C" {
 #include "common.h"
 #include "tengine_c_api.h"
 #include "tengine_operations.h"
+#include "ext.h"
 
 
 #define COCO
@@ -129,7 +129,7 @@ void show_usage() {
             "[Usage]:  [-h]\n    [-m model_file] [-i image_file] [-r repeat_count] [-t thread_count]\n");
 }
 
-int test_main(TengineArgs* args) {
+extern "C" int test_main(TengineArgs* args) {
     const char *model_file = args->model_file;
     const char *image_file = args->image_file;
     int repeat_count = DEFAULT_REPEAT_COUNT;
@@ -283,6 +283,4 @@ int test_main(TengineArgs* args) {
     // release all memory of tenging that allocate at beginning
     release_tengine();
     return 0;
-}
-
 }

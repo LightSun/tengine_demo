@@ -9,21 +9,23 @@
 #define TENGINE_MODE_FP16 2
 #define TENGINE_MODE_FP32 3
 
-typedef struct options{
-    int num_thread;
-    int cluster;
-    int precision;
-}options;
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-typedef struct TengineArgs{
-    char* outDir;
-    char* outFile;
-    char* model_file;
-    char* image_file;
+typedef struct TengineArgs {
+    char *outDir;
+    char *outFile;
+    char *model_file;
+    char *image_file;
     int repeat_count;
     int num_thread;
-}TengineArgs;
+} TengineArgs;
 
-const char* concatStr(const char *s1, const char *s2);
+const char *concatStr(const char *s1, const char *s2);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif //TENGINESTUDY_EXT_H
