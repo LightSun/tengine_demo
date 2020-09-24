@@ -12,7 +12,10 @@
 #include "tengine_c_api.h"
 #include "tengine_operations.h"
 #include "ext.h"
+#include "demos.h"
 
+
+namespace openpose {
 
 #define COCO
 #define DEFAULT_REPEAT_COUNT 1
@@ -129,158 +132,160 @@ void show_usage() {
             "[Usage]:  [-h]\n    [-m model_file] [-i image_file] [-r repeat_count] [-t thread_count]\n");
 }
 
-extern "C" int test_main(TengineArgs* args) {
-    const char *model_file = args->model_file;
-    const char *image_file = args->image_file;
-    int repeat_count = DEFAULT_REPEAT_COUNT;
-    int num_thread = DEFAULT_THREAD_COUNT;
-    int img_h = 368;
-    int img_w = 368;
+    extern "C" int openpose_main(TengineArgs *args) {
+        const char *model_file = args->model_file;
+        const char *image_file = args->image_file;
+        int repeat_count = DEFAULT_REPEAT_COUNT;
+        int num_thread = DEFAULT_THREAD_COUNT;
+        int img_h = 368;
+        int img_w = 368;
 
-  /*  int res;
-    while ((res = getopt(argc, argv, "m:i:r:t:h:")) != -1) {
-        switch (res) {
-            case 'm':
-                model_file = optarg;
-                break;
-            case 'i':
-                image_file = optarg;
-                break;
-            case 'r':
-                repeat_count = atoi(optarg);
-                break;
-            case 't':
-                num_thread = atoi(optarg);
-                break;
-            case 'h':
-                show_usage();
-                return 0;
-            default:
-                break;
-        }
-    }*/
+        /*  int res;
+          while ((res = getopt(argc, argv, "m:i:r:t:h:")) != -1) {
+              switch (res) {
+                  case 'm':
+                      model_file = optarg;
+                      break;
+                  case 'i':
+                      image_file = optarg;
+                      break;
+                  case 'r':
+                      repeat_count = atoi(optarg);
+                      break;
+                  case 't':
+                      num_thread = atoi(optarg);
+                      break;
+                  case 'h':
+                      show_usage();
+                      return 0;
+                  default:
+                      break;
+              }
+          }*/
 
-    /* check files */
-    if (model_file == nullptr) {
-        fprintf(stderr, "Error: Tengine model file not specified!\n");
-        show_usage();
-        return -1;
-    }
-
-    if (image_file == nullptr) {
-        fprintf(stderr, "Error: Image file not specified!\n");
-        show_usage();
-        return -1;
-    }
-
-    if (!check_file_exist(model_file) || !check_file_exist(image_file))
-        return -1;
-
-    /* inital tengine */
-    init_tengine();
-    fprintf(stderr, "tengine-lite library version: %s\n", get_tengine_version());
-
-    /* create graph, load tengine model xxx.tmfile */
-    graph_t graph = create_graph(nullptr, "tengine", model_file);
-    if (graph == nullptr) {
-        std::cout << "Create graph0 failed\n";
-        std::cout << "errno: " << get_tengine_errno() << "\n";
-        return -1;
-    }
-
-    /* set the input shape to initial the graph, and prerun graph to infer shape */
-    int channel = 3;
-    int img_size = img_h * img_w * channel;
-    int dims[] = {1, channel, img_h, img_w};    // nchw
-
-    float *input_data = (float *) malloc(sizeof(float) * img_size);
-
-    tensor_t input_tensor = get_graph_input_tensor(graph, 0, 0);
-    if (input_tensor == nullptr) {
-        fprintf(stderr, "Get input tensor failed\n");
-        return -1;
-    }
-
-    if (set_tensor_shape(input_tensor, dims, 4) < 0) {
-        fprintf(stderr, "Set input tensor shape failed\n");
-        return -1;
-    };
-
-    if (prerun_graph(graph) < 0) {
-        fprintf(stderr, "Prerun graph failed\n");
-        return -1;
-    }
-
-    /* prepare process input data, set the data mem to input tensor */
-    cv::Mat frame = cv::imread(image_file);
-    get_input_data_pose(frame, input_data, img_h, img_w);
-    // set_tensor_buffer(input_tensor, input_data, img_size*4);
-    if (set_tensor_buffer(input_tensor, input_data, img_size * 4) < 0) {
-        fprintf(stderr, "Set input tensor buffer failed\n");
-        return -1;
-    }
-
-    /* run graph */
-    double min_time = __DBL_MAX__;
-    double max_time = -__DBL_MAX__;
-    double total_time = 0.;
-    for (int i = 0; i < 1; i++) {
-        double start = get_current_time();
-        if (run_graph(graph, 1) < 0) {
-            fprintf(stderr, "Run graph failed\n");
+        /* check files */
+        if (model_file == nullptr) {
+            fprintf(stderr, "Error: Tengine model file not specified!\n");
+            show_usage();
             return -1;
         }
-        double end = get_current_time();
-        double cur = end - start;
-        total_time += cur;
-        min_time = std::min(min_time, cur);
-        max_time = std::max(max_time, cur);
+
+        if (image_file == nullptr) {
+            fprintf(stderr, "Error: Image file not specified!\n");
+            show_usage();
+            return -1;
+        }
+
+        if (!check_file_exist(model_file) || !check_file_exist(image_file))
+            return -1;
+
+        /* inital tengine */
+        init_tengine();
+        fprintf(stderr, "tengine-lite library version: %s\n", get_tengine_version());
+
+        /* create graph, load tengine model xxx.tmfile */
+        graph_t graph = create_graph(nullptr, "tengine", model_file);
+        if (graph == nullptr) {
+            std::cout << "Create graph0 failed\n";
+            std::cout << "errno: " << get_tengine_errno() << "\n";
+            return -1;
+        }
+
+        /* set the input shape to initial the graph, and prerun graph to infer shape */
+        int channel = 3;
+        int img_size = img_h * img_w * channel;
+        int dims[] = {1, channel, img_h, img_w};    // nchw
+
+        float *input_data = (float *) malloc(sizeof(float) * img_size);
+
+        tensor_t input_tensor = get_graph_input_tensor(graph, 0, 0);
+        if (input_tensor == nullptr) {
+            fprintf(stderr, "Get input tensor failed\n");
+            return -1;
+        }
+
+        if (set_tensor_shape(input_tensor, dims, 4) < 0) {
+            fprintf(stderr, "Set input tensor shape failed\n");
+            return -1;
+        };
+
+        if (prerun_graph(graph) < 0) {
+            fprintf(stderr, "Prerun graph failed\n");
+            return -1;
+        }
+
+        /* prepare process input data, set the data mem to input tensor */
+        cv::Mat frame = cv::imread(image_file);
+        get_input_data_pose(frame, input_data, img_h, img_w);
+        // set_tensor_buffer(input_tensor, input_data, img_size*4);
+        if (set_tensor_buffer(input_tensor, input_data, img_size * 4) < 0) {
+            fprintf(stderr, "Set input tensor buffer failed\n");
+            return -1;
+        }
+
+        /* run graph */
+        double min_time = __DBL_MAX__;
+        double max_time = -__DBL_MAX__;
+        double total_time = 0.;
+        for (int i = 0; i < 1; i++) {
+            double start = get_current_time();
+            if (run_graph(graph, 1) < 0) {
+                fprintf(stderr, "Run graph failed\n");
+                return -1;
+            }
+            double end = get_current_time();
+            double cur = end - start;
+            total_time += cur;
+            min_time = std::min(min_time, cur);
+            max_time = std::max(max_time, cur);
+        }
+        fprintf(stderr,
+                "Repeat %d times, thread %d, avg time %.2f ms, max_time %.2f ms, min_time %.2f ms\n",
+                1,
+                1,
+                total_time, max_time, min_time);
+        fprintf(stderr, "--------------------------------------\n");
+
+        /* get output tensor */
+        tensor_t out_tensor = get_graph_output_tensor(graph, 0, 0);
+        int out_dim[4];
+
+        if (get_tensor_shape(out_tensor, out_dim, 4) <= 0) {
+            std::cout << "get tensor shape failed, errno: " << get_tengine_errno() << "\n";
+            return 1;
+        }
+
+        float *outdata = (float *) get_tensor_buffer(out_tensor);
+        int num = nPoints;
+        int H = out_dim[2];
+        int W = out_dim[3];
+        float show_threshold = 0.1;
+        cv::Mat frameCopy = frame.clone();
+
+        post_process_pose(frame, frameCopy, show_threshold, outdata, num, H, W);
+
+        const char *result1 = concatStr(args->outDir, "/Output-Keypionts.jpg");
+        const char *result2 = concatStr(args->outDir, "/Output-Skeleton.jpg");
+        cv::imwrite(result1, frameCopy);
+        cv::imwrite(result2, frame);
+        free((void *) result1);
+        free((void *) result2);
+
+        // Release memory for input tensor
+        release_graph_tensor(input_tensor);
+        // free output tensor memory
+        release_graph_tensor(out_tensor);
+        // Release memory for each node memory of tengine graph
+        if (postrun_graph(graph) != 0) {
+            std::cout << "Postrun graph failed, errno: " << get_tengine_errno() << "\n";
+            return 1;
+        }
+        // free memory for input data
+        free(input_data);
+        // destory tengine graph
+        destroy_graph(graph);
+        // release all memory of tenging that allocate at beginning
+        release_tengine();
+        return 0;
     }
-    fprintf(stderr,
-            "Repeat %d times, thread %d, avg time %.2f ms, max_time %.2f ms, min_time %.2f ms\n", 1,
-            1,
-            total_time, max_time, min_time);
-    fprintf(stderr, "--------------------------------------\n");
-
-    /* get output tensor */
-    tensor_t out_tensor = get_graph_output_tensor(graph, 0, 0);
-    int out_dim[4];
-
-    if (get_tensor_shape(out_tensor, out_dim, 4) <= 0) {
-        std::cout << "get tensor shape failed, errno: " << get_tengine_errno() << "\n";
-        return 1;
-    }
-
-    float *outdata = (float *) get_tensor_buffer(out_tensor);
-    int num = nPoints;
-    int H = out_dim[2];
-    int W = out_dim[3];
-    float show_threshold = 0.1;
-    cv::Mat frameCopy = frame.clone();
-
-    post_process_pose(frame, frameCopy, show_threshold, outdata, num, H, W);
-
-    const char *result1 = concatStr(args->outDir, "/Output-Keypionts.jpg");
-    const char *result2 = concatStr(args->outDir, "/Output-Skeleton.jpg");
-    cv::imwrite(result1, frameCopy);
-    cv::imwrite(result2, frame);
-    free((void*)result1);
-    free((void*)result2);
-
-    // Release memory for input tensor
-    release_graph_tensor(input_tensor);
-    // free output tensor memory
-    release_graph_tensor(out_tensor);
-    // Release memory for each node memory of tengine graph
-    if (postrun_graph(graph) != 0) {
-        std::cout << "Postrun graph failed, errno: " << get_tengine_errno() << "\n";
-        return 1;
-    }
-    // free memory for input data
-    free(input_data);
-    // destory tengine graph
-    destroy_graph(graph);
-    // release all memory of tenging that allocate at beginning
-    release_tengine();
-    return 0;
 }

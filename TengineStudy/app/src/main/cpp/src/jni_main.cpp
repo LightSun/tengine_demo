@@ -3,6 +3,7 @@
 //
 #include <jni.h>
 #include "ext.h"
+#include "demos.h"
 
 #define EC_JNIEXPORT extern "C" JNIEXPORT
 #define JAVA_PREFIX                                     com_heaven7_android_tenginestudy
@@ -11,7 +12,8 @@
 
 #define SURFACE_VIEW_JAVA_API1(func, p1)            CONCAT_SURFACE(JAVA_PREFIX, func)(JNIEnv* env, jclass, p1)
 
-extern "C" int test_main(TengineArgs* args);
+#define call(name, args) name::name##_main(args)
+
 
 extern "C" JNIEXPORT jint Java_com_heaven7_android_tenginestudy_MainActivity_runMain(JNIEnv
 *env,jclass, jint argc,
@@ -20,23 +22,12 @@ jobjectArray arr
 //EC_JNIEXPORT jint JNICALL SURFACE_VIEW_JAVA_API1(runMain, jobjectArray arr){
     jsize len = env->GetArrayLength(arr);
     TengineArgs targs;
-    char* args[len];
-
     targs.outDir = const_cast<char *>(env->GetStringUTFChars(static_cast<jstring>(env->GetObjectArrayElement(arr, 0)), nullptr));
     targs.model_file = const_cast<char *>(env->GetStringUTFChars(static_cast<jstring>(env->GetObjectArrayElement(arr, 1)), nullptr));
     targs.image_file = const_cast<char *>(env->GetStringUTFChars(static_cast<jstring>(env->GetObjectArrayElement(arr, 2)), nullptr));
-   /* for (int i = 0; i < len; ++i) {
-        jstring jstr = static_cast<jstring>(env->GetObjectArrayElement(arr, i));
-        args[i] = const_cast<char *>(env->GetStringUTFChars(jstr, nullptr));
-        env->DeleteLocalRef(jstr);
-    }*/
-    int result = test_main(&targs);
-/*
-    for (int i = 0; i < len; ++i) {
-        jstring jstr = static_cast<jstring>(env->GetObjectArrayElement(arr, i));
-        env->ReleaseStringUTFChars(jstr, args[i]);
-        env->DeleteLocalRef(jstr);
-    }*/
+
+    int result = call(openpose, &targs);
+
     jstring jstr0 = static_cast<jstring>(env->GetObjectArrayElement(arr, 0));
     env->ReleaseStringUTFChars(jstr0, targs.outDir);
     env->DeleteLocalRef(jstr0);
