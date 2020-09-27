@@ -14,6 +14,7 @@ extern "C" {
 #endif
 
 typedef struct TengineArgs {
+    char * prefix;
     char *outDir;
     char *outFile;
     char *model_file;
@@ -24,6 +25,7 @@ typedef struct TengineArgs {
 
 const char *concatStr(const char *s1, const char *s2);
 
+const char *concatStr2(const char *s1,const char *s2,  const char *s3);
 #ifdef __cplusplus
 }
 #endif

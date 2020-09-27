@@ -7,12 +7,12 @@
 
 #include "ext.h"
 
-namespace openpose {
-    extern "C" int openpose_main(TengineArgs *args);
+#define API_MAIN(name)\
+namespace name {\
+    extern "C" int name##_main(TengineArgs *args);\
 }
 
-namespace landmark{
-    extern "C" int landmark_main(TengineArgs *args);
-}
+API_MAIN(openpose)
+API_MAIN(landmark)
 
 #endif //TENGINESTUDY_DEMOS_H

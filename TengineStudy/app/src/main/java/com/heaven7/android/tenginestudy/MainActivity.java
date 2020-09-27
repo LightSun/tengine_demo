@@ -10,6 +10,7 @@ import android.view.View;
 
 import com.heaven7.core.util.PermissionHelper;
 import com.heaven7.core.util.Toaster;
+import com.heaven7.java.base.util.FileUtils;
 import com.heaven7.java.pc.schedulers.Schedulers;
 
 import java.util.ArrayList;
@@ -26,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
         System.loadLibrary("tengine-lite");
         System.loadLibrary("tengine_demo");
     }
-    public static native int runMain(int argc,String[] args);
+    public static native int runMain(int argc, String prefix, String[] args);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
                 list.add("1");
                // list.add("-t");
                 list.add("1");
-                int result = runMain(4, list.toArray(new String[list.size()]));
+                int result = runMain(4, "xx",list.toArray(new String[list.size()]));
                 System.out.println("onClickTestLandmark: result = " + result);
             }
         });
@@ -90,15 +91,20 @@ public class MainActivity extends AppCompatActivity {
         Schedulers.io().newWorker().schedule(new Runnable() {
             @Override
             public void run() {
+                String file = Environment.getExternalStorageDirectory() +  "/DCIM/Camera/IMG_20200927_101845.jpg";
                 // -m models/landmark.tmfile -i images/mobileface02.jpg -r 1 -t 1
-                List<String> list = new ArrayList<>();
-                list.add(DST_PATH + "/openpose");
-                list.add(DST_PATH + "/openpose/tm_openpose_coco.tmfile");
-                list.add(DST_PATH + "/openpose/1.jpg");
-                list.add("1");
-                list.add("1");
-                int result = runMain(4, list.toArray(new String[list.size()]));
-                System.out.println("onClickTestOpenpose: result = " + result);
+                int count = 1;
+                for (int i = 1 ; i < count + 1; i ++){
+                    file = DST_PATH + "/openpose/test" +".jpg";
+                    long s = System.currentTimeMillis();
+                    List<String> list = new ArrayList<>();
+                    list.add(DST_PATH + "/openpose");
+                    list.add(DST_PATH + "/openpose/self_openpose_coco.tmfile");
+                    list.add(DST_PATH + "/openpose/4" +".jpg");
+                    int result = runMain(4, "/" + FileUtils.getFileName(file), list.toArray(new String[list.size()]));
+                    System.out.println("onClickTestOpenpose: result = " + result);
+                    System.out.println("cost time = " + (System.currentTimeMillis() - s));
+                }
             }
         });
     }

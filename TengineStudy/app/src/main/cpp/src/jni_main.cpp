@@ -16,12 +16,13 @@
 
 
 extern "C" JNIEXPORT jint Java_com_heaven7_android_tenginestudy_MainActivity_runMain(JNIEnv
-*env,jclass, jint argc,
+*env,jclass, jint argc, jstring prefix,
 jobjectArray arr
 ){
 //EC_JNIEXPORT jint JNICALL SURFACE_VIEW_JAVA_API1(runMain, jobjectArray arr){
     jsize len = env->GetArrayLength(arr);
     TengineArgs targs;
+    targs.prefix = const_cast<char *>(env->GetStringUTFChars(prefix, nullptr));
     targs.outDir = const_cast<char *>(env->GetStringUTFChars(static_cast<jstring>(env->GetObjectArrayElement(arr, 0)), nullptr));
     targs.model_file = const_cast<char *>(env->GetStringUTFChars(static_cast<jstring>(env->GetObjectArrayElement(arr, 1)), nullptr));
     targs.image_file = const_cast<char *>(env->GetStringUTFChars(static_cast<jstring>(env->GetObjectArrayElement(arr, 2)), nullptr));
@@ -39,5 +40,7 @@ jobjectArray arr
     jstring jstr2 = static_cast<jstring>(env->GetObjectArrayElement(arr, 2));
     env->ReleaseStringUTFChars(jstr2, targs.image_file);
     env->DeleteLocalRef(jstr2);
+
+    env->ReleaseStringUTFChars(prefix, targs.prefix);
     return result;
 }
