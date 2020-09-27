@@ -157,7 +157,7 @@ int main(int argc, char* argv[])
         return -1;
     }
 
-    if (prerun_graph_multithread2(graph, opt) < 0)
+    if (prerun_graph_multithread(graph, opt) < 0)
     {
         fprintf(stderr, "Prerun multithread graph failed.\n");
         return -1;

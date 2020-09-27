@@ -264,8 +264,8 @@ void show_usage() {
 
         post_process_pose(frame, frameCopy, show_threshold, outdata, num, H, W);
 
-        const char *result1 = concatStr2(args->outDir, args->prefix, "/Output-Keypionts.jpg");
-        const char *result2 = concatStr2(args->outDir, args->prefix, "/Output-Skeleton.jpg");
+        const char *result1 = concatStr2(args->outDir, args->prefix, "_Output-Keypionts.jpg");
+        const char *result2 = concatStr2(args->outDir, args->prefix, "_Output-Skeleton.jpg");
 
         cv::imwrite(result1, frameCopy);
         cv::imwrite(result2, frame);

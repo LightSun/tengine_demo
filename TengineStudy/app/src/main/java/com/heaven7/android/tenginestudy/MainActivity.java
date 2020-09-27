@@ -16,6 +16,10 @@ import com.heaven7.java.pc.schedulers.Schedulers;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * coo: 12.5 s
+ * body25: 4.5s
+ */
 public class MainActivity extends AppCompatActivity {
 
     private static final String DST_PATH = Environment.getExternalStorageDirectory() + "/tengine_demos";
@@ -95,12 +99,13 @@ public class MainActivity extends AppCompatActivity {
                 // -m models/landmark.tmfile -i images/mobileface02.jpg -r 1 -t 1
                 int count = 1;
                 for (int i = 1 ; i < count + 1; i ++){
-                    file = DST_PATH + "/openpose/test" +".jpg";
+                    file = DST_PATH + "/openpose/4" +".jpg";
                     long s = System.currentTimeMillis();
                     List<String> list = new ArrayList<>();
                     list.add(DST_PATH + "/openpose");
-                    list.add(DST_PATH + "/openpose/self_openpose_coco.tmfile");
-                    list.add(DST_PATH + "/openpose/4" +".jpg");
+                    //list.add(DST_PATH + "/openpose/self_openpose_coco.tmfile");
+                    list.add(DST_PATH + "/openpose/openpose_body25.tmfile");
+                    list.add(file);
                     int result = runMain(4, "/" + FileUtils.getFileName(file), list.toArray(new String[list.size()]));
                     System.out.println("onClickTestOpenpose: result = " + result);
                     System.out.println("cost time = " + (System.currentTimeMillis() - s));
