@@ -16,9 +16,13 @@ import com.heaven7.java.pc.schedulers.Schedulers;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
+/**========== openpose ============
  * coo: 12.5 s
  * body25: 4.5s
+ *
+ * vim3------------
+ * coco: 24.4s.
+ * body25: 8.6s
  */
 public class MainActivity extends AppCompatActivity {
 
@@ -107,8 +111,8 @@ public class MainActivity extends AppCompatActivity {
                     long s = System.currentTimeMillis();
                     List<String> list = new ArrayList<>();
                     list.add(DST_PATH + "/openpose");
-                    list.add(DST_PATH + "/openpose/self_openpose_coco.tmfile");
-                    //list.add(DST_PATH + "/openpose/openpose_body25.tmfile");
+                   // list.add(DST_PATH + "/openpose/self_openpose_coco.tmfile");
+                    list.add(DST_PATH + "/openpose/openpose_body25.tmfile");
                     list.add(file);
                     int result = runMain(4, "/" + FileUtils.getFileName(file), list.toArray(new String[list.size()]));
                     System.out.println("onClickTestOpenpose: result = " + result);
