@@ -5,7 +5,6 @@
 #include "ext.h"
 #include "demos.h"
 
-#define EC_JNIEXPORT extern "C" JNIEXPORT
 #define JAVA_PREFIX                                     com_heaven7_android_tenginestudy
 #define CONCAT(prefix, class, func)                     Java_ ## prefix ## _ ## class ## _ ## func
 #define CONCAT_SURFACE(prefix, func)                    CONCAT(prefix, MainActivity, func)

@@ -6,6 +6,8 @@
 #define TENGINESTUDY_DEMOS_H
 
 #include "ext.h"
+#include "jni.h"
+#define EC_JNIEXPORT extern "C" JNIEXPORT
 
 #define API_MAIN(name)\
 namespace name {\
@@ -14,5 +16,6 @@ namespace name {\
 
 API_MAIN(openpose)
 API_MAIN(landmark)
+
 
 #endif //TENGINESTUDY_DEMOS_H
