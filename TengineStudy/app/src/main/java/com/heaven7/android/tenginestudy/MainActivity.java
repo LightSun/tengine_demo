@@ -37,6 +37,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        if(!Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {//如果已经挂载
+            System.err.println("sdk 未挂载");
+            return;
+        }
 
         mHelper.startRequestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, 1, new PermissionHelper.ICallback() {
             @Override
@@ -103,8 +107,8 @@ public class MainActivity extends AppCompatActivity {
                     long s = System.currentTimeMillis();
                     List<String> list = new ArrayList<>();
                     list.add(DST_PATH + "/openpose");
-                    //list.add(DST_PATH + "/openpose/self_openpose_coco.tmfile");
-                    list.add(DST_PATH + "/openpose/openpose_body25.tmfile");
+                    list.add(DST_PATH + "/openpose/self_openpose_coco.tmfile");
+                    //list.add(DST_PATH + "/openpose/openpose_body25.tmfile");
                     list.add(file);
                     int result = runMain(4, "/" + FileUtils.getFileName(file), list.toArray(new String[list.size()]));
                     System.out.println("onClickTestOpenpose: result = " + result);
