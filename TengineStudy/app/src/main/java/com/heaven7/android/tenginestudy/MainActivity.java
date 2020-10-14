@@ -26,7 +26,7 @@ import java.util.List;
  */
 public class MainActivity extends AppCompatActivity {
 
-    private static final String DST_PATH = Environment.getExternalStorageDirectory() + "/tengine_demos";
+    public static final String DST_PATH = Environment.getExternalStorageDirectory() + "/tengine_demos";
     private final PermissionHelper mHelper = new PermissionHelper(this);
 
     static {

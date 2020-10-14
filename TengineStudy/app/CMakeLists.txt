@@ -22,6 +22,8 @@ add_library(
         src/main/cpp/src/jni_main.cpp
         src/main/cpp/src/GraphParam.cpp
         src/main/cpp/src/tgwrapper.cpp
+        src/main/cpp/src/openpose.cpp
+        src/main/cpp/src/JTgwrapper.cpp
 )
 find_library( # Sets the name of the path variable.
         log-lib
@@ -32,6 +34,7 @@ find_library( # Sets the name of the path variable.
 
 target_link_libraries(
         tengine_demo
+        jnigraphics
         tengine
         opencv
 )

@@ -10,16 +10,60 @@
 #include "opencv2/core/mat.hpp"
 
 class TgWrapper{
-public:
-    static void init();
-    static void destroy();
-    static graph_t initModule(const char* file);
+protected:
+    graph_t mGraph;
+    tensor_t input_tensor;
+    GraphParam* gp;
+    cv::Mat frame;
+    tensor_t out_tensor;
+    int* outDims;
 
-    void setTensorShape(const GraphParam* gp);
+    void* mInput_data;
+    const char* uniqueId;
+
+public:
+    inline static void initEngine();
+    inline static void destroyEngine();
+
+    void destroy();
+
+    void createGraph(const char* model_format, const char* file_name);
+
+    bool getInputTensor(int input_node_idx, int tensor_idx);
+    /**
+     * set tensor shape. default is float
+     * @param gp the graph parameter
+     */
+    bool setTensorShape(GraphParam*& gp);
+
+    /**
+     * set input buffer.
+     * @param frame  the frame as input buffer
+     * @param uniqueId the id of this frame. this is often used for generate result.
+     */
+    void setInputBuffer(cv::Mat& frame, const char* uniqueId);
+    void setInputBuffer(const char* frameFile, const char* uniqueId);
+
+    void preRunGraph();
+
+    bool runGraph(int repeatCount = 1, bool block);
+
+    bool getOutputTensor(int input_node_idx, int tensor_idx);
+
+    //========== result should order in here ========
+    void postProcess();
+
+    void postRunGraph();
+
+    inline graph_t getGraph(){
+        return mGraph;
+    }
+    inline float* getInputBufferAsFloat(){
+        return static_cast<float *>(mInput_data);
+    }
+    inline int getImageSize(){
+        return gp->getImageSize();
+    }
 };
 
-class Openpose{
-public:
-    void setInputBuffer(const cv::Mat* mat);
-};
 #endif //TENGINESTUDY_TGWRAPPER_H
