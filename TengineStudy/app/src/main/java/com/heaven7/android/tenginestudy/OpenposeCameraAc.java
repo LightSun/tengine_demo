@@ -1,11 +1,7 @@
 package com.heaven7.android.tenginestudy;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.ImageFormat;
+import android.Manifest;
 import android.graphics.PixelFormat;
-import android.graphics.Rect;
-import android.graphics.YuvImage;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -13,11 +9,13 @@ import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.heaven7.core.util.Logger;
+import com.heaven7.core.util.PermissionHelper;
 import com.heaven7.java.pc.schedulers.Schedulers;
 
 import java.io.File;
@@ -31,8 +29,10 @@ public class OpenposeCameraAc extends AppCompatActivity {
 
     SurfaceView mSurfaceView;
 
+    private final PermissionHelper mHelper = new PermissionHelper(this);
     private final TgWrapper mWrapper = new TgWrapper(TgWrapper.TYPE_OPENPOSE);
     private final GraphParam mGraphParam = new GraphParam();
+    private InferenceQueueManager mInferM;
 
     private int mScreenWidth,mScreenHeight;
 
@@ -48,6 +48,7 @@ public class OpenposeCameraAc extends AppCompatActivity {
         mScreenWidth = dm.widthPixels;
         mScreenHeight = dm.heightPixels;
 
+        mInferM = new InferenceQueueManager(mWrapper);
         setContentView(R.layout.ac_openpose_camera);
 
         mSurfaceView = findViewById(R.id.surfaceView);
@@ -56,16 +57,40 @@ public class OpenposeCameraAc extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        mCamera.release();
+        mInferM.cancel();
         mWrapper.destroy();
         mWrapper.destroyNative();
         mGraphParam.destroyNative();
         super.onDestroy();
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        mHelper.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
     private void initCameraEvent() {
         mSurfaceView.getHolder().setKeepScreenOn(true);
         mSurfaceView.getHolder().addCallback(new SurfaceCallback());
         mSurfaceView.getHolder().setFormat(PixelFormat.TRANSPARENT);
+    }
+    private void reqPermission(Camera.CameraInfo info, int cameraId, SurfaceHolder holder){
+        mHelper.startRequestPermission(new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                new int[]{1, 2}, new PermissionHelper.ICallback() {
+                    @Override
+                    public void onRequestPermissionResult(String s, int i, boolean b) {
+                        if(b){
+                            startPreview(info, cameraId, holder);
+                        }else {
+                            System.err.println("permission not required. camera / sd");
+                        }
+                    }
+                    @Override
+                    public boolean handlePermissionHadRefused(String s, int i, Runnable runnable) {
+                        return false;
+                    }
+                });
     }
     public void startPreview(Camera.CameraInfo info, int cameraId, SurfaceHolder holder) {
         try {
@@ -145,7 +170,7 @@ public class OpenposeCameraAc extends AppCompatActivity {
         mWrapper.createGraph("tengine", MainActivity.DST_PATH + "/openpose/openpose_body25.tmfile");
         mWrapper.getInputTensor(0, 0);
         mWrapper.setTensorShape(mGraphParam);
-        Logger.d(TAG, "setupParameters", "cost time = " + (System.currentTimeMillis() - start));
+        Logger.d(TAG, "setupParameters", "createGraph cost time = " + (System.currentTimeMillis() - start));
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -158,31 +183,22 @@ public class OpenposeCameraAc extends AppCompatActivity {
             @Override
             public void onPreviewFrame(byte[] data, Camera camera) {
                 Camera.Size size = camera.getParameters().getPreviewSize();
-
-                long start = System.currentTimeMillis();
-                mWrapper.setInputBuffer(data, size.width, size.height,  System.currentTimeMillis()+"");
-
-                mWrapper.preRunGraph();
-                mWrapper.runGraph(1, true);
-                mWrapper.getOutputTensor(0, 0);
-                mWrapper.postProcess();
-                mWrapper.postRunGraph();
+                mInferM.putItem(new InferenceQueueManager.Item(data, size.width, size.height,  System.currentTimeMillis()+""));
             }
         });
     }
     private class SurfaceCallback implements SurfaceHolder.Callback{
         @Override
         public void surfaceCreated(SurfaceHolder holder) {
-            int nNum = Camera.getNumberOfCameras(); // 根据摄像头的id找前后摄像头
+            int nNum = Camera.getNumberOfCameras();
             if (nNum == 0) {
-                // 没有摄像头
                 return;
             }
             for (int i = 0; i < nNum; i++) {
                 Camera.CameraInfo info = new Camera.CameraInfo();
                 Camera.getCameraInfo(i, info);
-                if (info.facing == Camera.CameraInfo.CAMERA_FACING_BACK) { // 后摄像头
-                    startPreview(info, i, holder); // 设置preview的显示属性
+                if (info.facing == Camera.CameraInfo.CAMERA_FACING_BACK) {
+                    reqPermission(info, i, holder);
                     mCameraInfo = info;
                     return;
                 }
@@ -214,4 +230,5 @@ public class OpenposeCameraAc extends AppCompatActivity {
             }
         }
     }
+
 }

@@ -33,6 +33,9 @@ void TgWrapper::destroy() {
 }
 
 void TgWrapper::createGraph(const char *model_format, const char *file_name) {
+    /* create device context for npc */
+    //context_t vx_context = create_context("vx", 1);
+   // add_context_device(vx_context, VXDEVICE);
     mGraph = create_graph(nullptr, model_format, file_name);
 }
 

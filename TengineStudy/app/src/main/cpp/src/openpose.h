@@ -11,7 +11,7 @@ class Openpose : public TgWrapper{
 private:
 
 public:
-    void setInputBuffer(cv::Mat& frame, const char* uniqueId);
+    void setInputBuffer(cv::Mat& frame, const char* uniqueId) ;
     void setInputBuffer(const char* frameFile, const char* uniqueId);
     void postProcess();
 

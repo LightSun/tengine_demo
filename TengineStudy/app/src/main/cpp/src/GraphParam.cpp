@@ -24,7 +24,7 @@ int GraphParam::getDims(int *arr) {
 }
 void GraphParam::setOutDir(const char *od) {
    outDir = static_cast<char *>(malloc(strlen(od) + 1));
-   strcpy(outDir, od);
+   memcpy((void *)outDir, (const void *) od, sizeof(char) * (strlen(od) + 1));
 }
 char* GraphParam::getOutDir() {
     return outDir;

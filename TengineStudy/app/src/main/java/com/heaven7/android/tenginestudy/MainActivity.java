@@ -1,20 +1,22 @@
 package com.heaven7.android.tenginestudy;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.Manifest;
-import android.app.LauncherActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.View;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.heaven7.core.util.Logger;
 import com.heaven7.core.util.PermissionHelper;
 import com.heaven7.core.util.Toaster;
 import com.heaven7.java.base.util.FileUtils;
 import com.heaven7.java.pc.schedulers.Schedulers;
 
+import java.io.File;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,9 +30,13 @@ import java.util.List;
  */
 public class MainActivity extends AppCompatActivity {
 
+    private static final String TAG = "MainActivity";
     public static final String DST_PATH = Environment.getExternalStorageDirectory() + "/tengine_demos";
+    private static final String OPENPOSE_OUT_DIR = DST_PATH + "/openpose/out";
+
     private final PermissionHelper mHelper = new PermissionHelper(this);
-    private static boolean sInit;
+
+    private final GraphParam mGraphParam = new GraphParam();
 
     static {
         System.loadLibrary("c++_shared"); //opencv need c++ shared
@@ -125,10 +131,51 @@ public class MainActivity extends AppCompatActivity {
         });
     }
     public void onClickOpenposeCamera(View view) {
-        if(!sInit){
-            sInit = true;
-            TgWrapper.initEngine();
-        }
         startActivity(new Intent(this, OpenposeCameraAc.class));
+    }
+
+    public void onClickOpenpose2(View view) {
+        Schedulers.io().newWorker().schedule(new Runnable() {
+            @Override
+            public void run() {
+                exeOpenpose();
+            }
+        });
+    }
+
+    //infer: 800M+
+    //destroy: 500M
+    private void exeOpenpose(){
+        long start = System.currentTimeMillis();
+        TgWrapper.initEngine();
+        Logger.d(TAG, "exeOpenpose", "init cost time = " + (System.currentTimeMillis() - start));
+        start = System.currentTimeMillis();
+        //prepare param
+        new File(OPENPOSE_OUT_DIR).mkdirs();
+        mGraphParam.setOutputDir(OPENPOSE_OUT_DIR);
+        mGraphParam.setUnitSize(4);
+        mGraphParam.setN(1);
+        mGraphParam.setC(3);
+        mGraphParam.setW(368);
+        mGraphParam.setH(368);
+        mGraphParam.setStype(GraphParam.OPENPOSE_TYPE_BODY25);
+
+        final TgWrapper mWrapper = new TgWrapper(TgWrapper.TYPE_OPENPOSE);
+        mWrapper.createGraph("tengine", MainActivity.DST_PATH + "/openpose/openpose_body25.tmfile");
+        mWrapper.getInputTensor(0, 0);
+        mWrapper.setTensorShape(mGraphParam);
+        Logger.d(TAG, "exeOpenpose", "createGraph cost time = " + (System.currentTimeMillis() - start));
+
+        start = System.currentTimeMillis();
+        mWrapper.setInputBuffer(DST_PATH + "/openpose/4" +".jpg",  "id4");
+
+        mWrapper.preRunGraph();
+        mWrapper.runGraph(1, true);
+        mWrapper.getOutputTensor(0, 0);
+        mWrapper.postProcess();
+        mWrapper.postRunGraph();
+        Logger.d(TAG, "exeOpenpose","inference  cost time: " + (System.currentTimeMillis() - start));
+        mWrapper.destroy();
+        mWrapper.destroyNative();
     }
 }

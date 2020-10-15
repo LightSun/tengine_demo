@@ -60,7 +60,7 @@ Java_com_heaven7_android_tenginestudy_TgWrapper_npreRunGraph(JNIEnv *env, jobjec
 extern "C"
 JNIEXPORT void JNICALL
 Java_com_heaven7_android_tenginestudy_TgWrapper_npostProcess(JNIEnv *env, jobject thiz, jlong ptr) {
-    TgWrapper* tw = reinterpret_cast<TgWrapper *>(ptr);
+    Openpose* tw = reinterpret_cast<Openpose *>(ptr);
     tw->postProcess();
 }
 extern "C"
@@ -106,7 +106,7 @@ JNIEXPORT void JNICALL
 Java_com_heaven7_android_tenginestudy_TgWrapper_nsetInputBuffer(JNIEnv *env, jobject thiz,
                                                                 jlong ptr, jobject bitmap,
                                                                 jstring id) {
-    TgWrapper* tw = reinterpret_cast<TgWrapper *>(ptr);
+    Openpose* tw = reinterpret_cast<Openpose *>(ptr);
 
     AndroidBitmapInfo info;
     memset(&info, 0, sizeof(info));
@@ -145,7 +145,7 @@ JNIEXPORT void JNICALL
 Java_com_heaven7_android_tenginestudy_TgWrapper_nsetInputBuffer2(JNIEnv *env, jobject thiz,
                                                                  jlong ptr, jstring img_file,
                                                                  jstring id) {
-    TgWrapper* tw = reinterpret_cast<TgWrapper *>(ptr);
+    Openpose* tw = reinterpret_cast<Openpose *>(ptr);
     OP_JSTRING2(env, img_file, id, tw->setInputBuffer(str1, str2))
 }
 extern "C"
@@ -153,7 +153,7 @@ JNIEXPORT void JNICALL
 Java_com_heaven7_android_tenginestudy_TgWrapper_nsetInputBuffer3(JNIEnv *env, jobject thiz,
                                                                  jlong ptr, jbyteArray data,
                                                                  jint width, jint height, jstring id) {
-    TgWrapper* tw = reinterpret_cast<TgWrapper *>(ptr);
+    Openpose* tw = reinterpret_cast<Openpose *>(ptr);
 //YUV420SP to BGR
     jbyte * pBuf = env->GetByteArrayElements(data, 0);
     cv::Mat image(height + height/2, width, CV_8UC1, (unsigned char *)pBuf);

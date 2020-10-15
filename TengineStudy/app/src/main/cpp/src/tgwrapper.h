@@ -22,7 +22,7 @@ protected:
     const char* uniqueId;
 
 public:
-    inline static void initEngine(){ initEngine();}
+    inline static void initEngine(){ init_tengine();}
     inline static void destroyEngine(){release_tengine();}
 
     void destroy();
@@ -41,8 +41,8 @@ public:
      * @param frame  the frame as input buffer
      * @param uniqueId the id of this frame. this is often used for generate result.
      */
-    void setInputBuffer(cv::Mat& frame, const char* uniqueId);
-    void setInputBuffer(const char* frameFile, const char* uniqueId);
+    virtual void setInputBuffer(cv::Mat& frame, const char* uniqueId) = 0;
+    virtual void setInputBuffer(const char* frameFile, const char* uniqueId) = 0;
 
     void preRunGraph();
 
@@ -51,7 +51,7 @@ public:
     bool getOutputTensor(int input_node_idx, int tensor_idx);
 
     //========== result should order in here ========
-    void postProcess();
+    virtual void postProcess() = 0;
 
     void postRunGraph();
 
