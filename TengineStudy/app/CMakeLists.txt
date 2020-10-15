@@ -37,4 +37,5 @@ target_link_libraries(
         jnigraphics
         tengine
         opencv
+        ${log-lib}
 )

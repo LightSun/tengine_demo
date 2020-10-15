@@ -35,10 +35,11 @@ extern "C"
 JNIEXPORT void JNICALL
 Java_com_heaven7_android_tenginestudy_TgWrapper_nRelease(JNIEnv *env, jclass clazz, jlong ptr, jint type) {
     switch(type){
-        case OPENPOSE:
-            Openpose* tw = reinterpret_cast<Openpose *>(ptr);
-            delete(tw);
+        case OPENPOSE: {
+            Openpose *tw = reinterpret_cast<Openpose *>(ptr);
+            delete (tw);
             break;
+        }
 
         default:
             LOGW("unknown type = %d", type);

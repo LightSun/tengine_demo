@@ -36,7 +36,7 @@ public:
      *  int img_size = img_h * img_w * channel;
         int dims[] = {1, channel, img_h, img_w};
      */
-    inline int getImageSize();
+    inline int getImageSize(){ return channels * width * height;};
     int getDims(int *dims);
     void setOutDir(const char* outDir);
     char* getOutDir();

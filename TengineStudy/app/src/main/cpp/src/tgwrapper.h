@@ -22,8 +22,8 @@ protected:
     const char* uniqueId;
 
 public:
-    inline static void initEngine();
-    inline static void destroyEngine();
+    inline static void initEngine(){ initEngine();}
+    inline static void destroyEngine(){release_tengine();}
 
     void destroy();
 
@@ -46,7 +46,7 @@ public:
 
     void preRunGraph();
 
-    bool runGraph(int repeatCount = 1, bool block);
+    bool runGraph(int repeatCount, bool block);//c++ default value must at the ends
 
     bool getOutputTensor(int input_node_idx, int tensor_idx);
 

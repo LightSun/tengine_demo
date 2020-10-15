@@ -5,12 +5,7 @@
 #ifndef FFMPEGOPENGLDEMO_LOG_H
 #define FFMPEGOPENGLDEMO_LOG_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #define TAG "tengine_study"
-
     //J->ThrowNew(env, J->FindClass(env, "java/io/IOException"), "invalid bitmap");
 #ifdef ANDROID
     #include "android/log.h"
@@ -28,9 +23,5 @@ extern "C" {
     #define DBG(...) static_cast<void>(0)
 #endif
 
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif //FFMPEGOPENGLDEMO_LOG_H

@@ -14,9 +14,6 @@ GraphParam::~GraphParam() {
         outDir = nullptr;
     }
 }
-int GraphParam::getImageSize() {
-    return channels * width * height;
-}
 
 int GraphParam::getDims(int *arr) {
     arr[0] = n;

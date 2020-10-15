@@ -11,13 +11,6 @@
 #include "opencv2/core/core.hpp"
 #include "opencv2/highgui/highgui.hpp"
 
-void TgWrapper::initEngine() {
-    init_tengine();
-}
-void TgWrapper::destroyEngine() {
-    // release all memory of tenging that allocate at beginning
-    release_tengine();
-}
 void TgWrapper::destroy() {
     if(outDims != nullptr){
         free(outDims);

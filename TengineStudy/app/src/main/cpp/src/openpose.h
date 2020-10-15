@@ -16,7 +16,7 @@ public:
     void postProcess();
 
     static int getNPoints(int type);
-    static int** getPosePairs(int type);
+    //static int** getPosePairs(int type); //c++can't cast int arr[14][2] to int **
 };
 
 #endif //TENGINESTUDY_OPENPOSE_H

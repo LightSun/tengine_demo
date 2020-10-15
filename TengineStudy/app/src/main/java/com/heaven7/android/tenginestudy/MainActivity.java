@@ -4,6 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
+import android.app.LauncherActivity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.View;
@@ -28,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static final String DST_PATH = Environment.getExternalStorageDirectory() + "/tengine_demos";
     private final PermissionHelper mHelper = new PermissionHelper(this);
+    private static boolean sInit;
 
     static {
         System.loadLibrary("c++_shared"); //opencv need c++ shared
@@ -120,5 +123,12 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+    public void onClickOpenposeCamera(View view) {
+        if(!sInit){
+            sInit = true;
+            TgWrapper.initEngine();
+        }
+        startActivity(new Intent(this, OpenposeCameraAc.class));
     }
 }
