@@ -24,3 +24,9 @@ const char *concatStr2(const char *s1, const char *s2, const char *s3) {
     strcat(result, s3);
     return result;
 }
+
+char *copyStr(const char *s1){
+    char *res = (char*)malloc(strlen(s1));
+    strcpy(res, s1);
+    return res;
+}

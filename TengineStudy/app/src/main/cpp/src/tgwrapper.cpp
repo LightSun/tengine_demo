@@ -30,6 +30,10 @@ void TgWrapper::destroy() {
         destroy_graph(mGraph);
         mGraph = nullptr;
     }
+    if(uniqueId){
+        free(uniqueId);
+        uniqueId = nullptr;
+    }
 }
 
 void TgWrapper::createGraph(const char *model_format, const char *file_name) {

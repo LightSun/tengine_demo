@@ -19,7 +19,7 @@ protected:
     int* outDims;
 
     void* mInput_data;
-    const char* uniqueId;
+    char* uniqueId = NULL;
 
 public:
     inline static void initEngine(){ init_tengine();}

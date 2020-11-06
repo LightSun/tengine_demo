@@ -145,7 +145,7 @@ int Openpose::getNPoints(int type) {
 
 void Openpose::setInputBuffer(cv::Mat& frame,const char* uniqueId) {
     if(mInput_data != nullptr){
-        this->uniqueId = uniqueId;
+        this->uniqueId = copyStr(uniqueId);
         this->frame = frame;
         get_input_data_pose(frame, getInputBufferAsFloat(), gp->height, gp->width);
         // set_tensor_buffer(input_tensor, input_data, img_size*4);
@@ -157,7 +157,7 @@ void Openpose::setInputBuffer(cv::Mat& frame,const char* uniqueId) {
 }
 void Openpose::setInputBuffer(const char *frameFile, const char *uniqueId) {
     if(mInput_data != nullptr){
-        this->uniqueId = uniqueId;
+        this->uniqueId = copyStr(uniqueId);
         this->frame = cv::imread(frameFile);
         get_input_data_pose(frame, getInputBufferAsFloat(), gp->height, gp->width);
         // set_tensor_buffer(input_tensor, input_data, img_size*4);
@@ -171,6 +171,7 @@ void Openpose::setInputBuffer(const char *frameFile, const char *uniqueId) {
 void Openpose::postProcess() {
     float *outdata = (float *) get_tensor_buffer(out_tensor);
     int num = getNPoints(gp->stype);
+    //46 * 46
     int H = outDims[2];
     int W = outDims[3];
     float show_threshold = 0.1;
