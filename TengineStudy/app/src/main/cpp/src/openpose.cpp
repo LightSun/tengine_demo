@@ -66,7 +66,7 @@ static void get_input_data_pose(cv::Mat img, float *input_data, int img_h, int i
     int hw = img_h * img_w;
     double scalefactor = 1.0 / 255;
     float mean[3] = {0, 0, 0};
-
+    //深度学习要求，数据排列RRR....GGG...BBB... so. make RGBRGB... TO  RRR...GGG...BBB    
     for (int h = 0; h < img_h; h++) {
         for (int w = 0; w < img_w; w++) {
             for (int c = 0; c < 3; c++) {
